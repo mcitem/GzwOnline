@@ -1,0 +1,3 @@
+DATABASE_URL = "mysql://<USER\>:<PASSWORD\>@<DOMAIN\>:<PORT\>/<TABLE\>"
+LOG_WRITER = 0
+RUST_LOG = debug

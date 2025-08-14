@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      var coverSupport =
+        "CSS" in window &&
+        typeof CSS.supports === "function" &&
+        (CSS.supports("top: env(a)") || CSS.supports("top: constant(a)"));
+      document.write(
+        '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
+          (coverSupport ? ", viewport-fit=cover" : "") +
+          '" />'
+      );
+    </script>
+    <title>扫码访问手机端</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+
+    <!-- 容器 -->
+    <uni-adapt-pc></uni-adapt-pc>
+
+    <!-- PC 模板 -->
+    <script type="text/html" id="tpl-adapt-pc">
+      <div class="container">
+        <iframe src="helang-mobile-href" class="left"></iframe>
+        <div class="right">
+          <div class="text">
+            <h1>为获得最佳体验</h1>
+            <h2>建议您使用手机扫码进行访问</h2>
+          </div>
+          <img
+            class="qrcode"
+            src="/static/http___guangzhouwanonline.cn_.png"
+            alt="二维码"
+          />
+        </div>
+      </div>
+    </script>
+
+    <script type="text/javascript">
+      (function () {
+        if (window.innerWidth < 888) return;
+        let tpl = document.querySelector("#tpl-adapt-pc").innerHTML || "";
+        tpl = tpl.replace("helang-mobile-href", window.location.href);
+        document.querySelector("uni-adapt-pc").innerHTML = tpl;
+        document.body.setAttribute("adapt", "pc");
+      })();
+    </script>
+
+    <style>
+      body[adapt="pc"] {
+        margin: 0;
+        width: 100vw;
+        height: 100vh;
+      }
+      body[adapt="pc"] > * {
+        display: none !important;
+      }
+      body[adapt="pc"] > uni-adapt-pc {
+        display: block !important;
+      }
+      body[adapt="pc"] uni-adapt-pc .container {
+        position: fixed;
+        display: flex;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px 40px;
+        background: url("https://oss.guangzhouwanonline.cn/oss/1.jpg")
+          center/cover no-repeat;
+      }
+      body[adapt="pc"] uni-adapt-pc .container .left {
+        max-width: 800px;
+        min-width: 360px;
+        border: none;
+        border-radius: 16px;
+        background-color: #fff;
+      }
+      body[adapt="pc"] uni-adapt-pc .container .right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+      }
+      body[adapt="pc"] uni-adapt-pc .container .right img {
+        min-width: 300px;
+        max-width: 30%;
+        height: auto;
+        border-radius: 16px;
+      }
+      body[adapt="pc"] uni-adapt-pc .container .text {
+        background: rgba(255, 255, 255, 0.6);
+        padding: 5px;
+        border-radius: 16px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+    </style>
+  </body>
+</html>

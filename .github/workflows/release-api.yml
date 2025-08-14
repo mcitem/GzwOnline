@@ -1,0 +1,42 @@
+name: release-api
+on:
+  workflow_dispatch:
+jobs:
+  release-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: "x86_64-unknown-linux-musl"
+
+      - uses: ilammy/setup-nasm@v1
+
+      - run: sudo apt-get update && sudo apt-get install -y musl-tools
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "API"
+
+      - run: cargo build --release --target=x86_64-unknown-linux-musl
+        working-directory: API
+
+      - name: Upload cargo build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cargo-build
+          path: ./API/target/x86_64-unknown-linux-musl/release/api
+
+      - name: Deploy via SSH using ssh-agent
+        run: |
+          eval "$(ssh-agent -s)"
+          ssh-add <(echo "${{ secrets.SHENZHEN }}")
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.PORT }} ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+          ssh -p ${{ secrets.PORT }} root@${{ secrets.HOST }} "rm -rf /root/mcitem/gzw_api/api"
+          scp -P ${{ secrets.PORT }} ./API/target/x86_64-unknown-linux-musl/release/api root@${{ secrets.HOST }}:/root/mcitem/gzw_api/
+          ssh -p ${{ secrets.PORT }} root@${{ secrets.HOST }} "supervisorctl restart gzw_api:*"
+          ssh -p ${{ secrets.PORT }} root@${{ secrets.HOST }} "chmod +x /root/mcitem/gzw_api/api"
+
+          ssh-agent -k
