@@ -1,5 +1,7 @@
 # 概要
 
+![image](https://github.com/user-attachments/assets/d1d4fec4-42ea-4e7c-b6bc-f7cfb2e41d7f)
+
 ```
 Root
 ├── API                      后端 Rust crate
